@@ -4,25 +4,19 @@
 #include <iostream>
 #include "CPlayer.h"
 #include "CEvent.h"
+#include "CGameScreen.h"
 
-CPlayer::CPlayer( CEvent* event ) : CEntity() {
+CPlayer::CPlayer( CGameScreen* gameScreen, CEvent* event, int x, int y ) : CEntity( x, y ) {
     m_event = event;
-    this->init();
-}
-
-CPlayer::CPlayer( CEvent* event, int x, int y ) : CEntity( x, y ) {
-    m_event = event;
-    this->init();
-}
-
-void CPlayer::init() {
+    m_gameScreen = gameScreen;
     this->loadImage( "player.png" );
     m_frame = 0;
-    m_isMoving = false;
-    m_isJumping = false;
     m_yVelocity = 0;
     m_xVelocity = 0;
-    m_collidingEntities = new std::vector<CEntity*>();
+}
+
+CPlayer::~CPlayer() {
+    al_destroy_bitmap( m_image );
 }
 
 void CPlayer::loadImage( char filename[] ) {
@@ -33,37 +27,20 @@ void CPlayer::loadImage( char filename[] ) {
     }
 }
 
-void CPlayer::render() {
+void CPlayer::render( int cameraX, int cameraY ) {
     int x = this->getPosX();
     int y = this->getPosY();
 
     ALLEGRO_BITMAP* subImage = al_create_sub_bitmap( m_image, 64 * (int) m_frame, 0, 64, 64 );
-    al_draw_bitmap( subImage, x, y, 0 );
+    al_draw_bitmap( subImage, x - cameraX, y - cameraY, 0 );
 }
 
 void CPlayer::update() {
-    if ( !m_collidingEntities->empty() ) {
-        for ( int a = 0; a < m_collidingEntities->size(); a++ ) {
-            int xDiff = this->getPosX() - m_collidingEntities->at( a )->getPosX();
-            int yDiff = this->getPosY() - m_collidingEntities->at( a )->getPosY();
-            if ( xDiff < 0 ) {
-                xDiff += 64;
-            } else {
-                xDiff -= 64;
-            }   
-            if ( yDiff < 0 ) {
-                yDiff += 64;
-            } else {
-                yDiff -= 64;
-            }
-            this->setPosX( this->getPosX() + xDiff * -1 );
-            /*this->setPosY( this->getPosY() + yDiff * -1 );*/
-        }
-        m_collidingEntities->clear();
-    }
-
     this->move();
+    this->jump();
 
+    this->setPosX( this->getPosX() + m_xVelocity );
+    this->setPosY( this->getPosY() + m_yVelocity );
     m_frame += 0.10;
     if ( m_frame > 3 ) {
         m_frame = 0;
@@ -72,29 +49,57 @@ void CPlayer::update() {
 
 
 void CPlayer::move() {
-    m_isMoving = false;
-    if ( m_event->isKeyDown( ALLEGRO_KEY_A ) ) {
-        m_xVelocity = -5;
-        m_isMoving = true;
-    } 
-    if ( m_event->isKeyDown( ALLEGRO_KEY_D ) ) {
+    if ( m_event->isKeyDown( ALLEGRO_KEY_RIGHT ) ) {
         m_xVelocity = 5;
-        m_isMoving = true;
+    } else if ( m_event->isKeyDown( ALLEGRO_KEY_LEFT ) ) {
+        m_xVelocity = -5;
+    } else {
+        m_xVelocity = 0;
     }
-    
-    if ( m_xVelocity != 0  && m_isMoving) {
-        this->setPosX( this->getPosX() + m_xVelocity );
-    }    
+    std::vector<CEntity*>* ents = m_gameScreen->getVisibleEntities();
+    for ( int a = 0; a < ents->size(); a++ ) {
+        CEntity* ent = ents->at( a );
+        bool isColliding = this->isColliding( ent, this->getPosX() + m_xVelocity, 
+                this->getPosY() );
+        if ( isColliding ) {
+            m_xVelocity = 0;
+        }
+    }
+
 }
 
-void CPlayer::isColliding( CEntity* entity ) {
-    int playerX = this->getPosX();
-    int playerY = this->getPosY();
+void CPlayer::jump() {
+    if( m_yVelocity == 0 && m_event->isKeyDown( ALLEGRO_KEY_SPACE ) ) {
+        m_yVelocity = -5;
+        return;
+    }
+    
+    m_yVelocity += 0.4;
+    std::vector<CEntity*>* ents = m_gameScreen->getVisibleEntities();
+    for ( int a = 0; a < ents->size(); a++ ) {
+        CEntity* ent = ents->at( a );
+        bool isColliding = this->isColliding( ent, this->getPosX(), 
+                this->getPosY() + m_yVelocity );
+        if ( isColliding ) {
+            m_yVelocity = 0;
+        }
+    }
+}
+
+bool CPlayer::isColliding( CEntity* entity, int x, int y ) {
+    int playerX = x;
+    int playerY = y;
     int entityX = entity->getPosX();
     int entityY = entity->getPosY();
 
     if ( playerX < ( entityX + 64 ) && playerY < ( entityY + 64 ) &&
             ( playerX + 64 ) > entityX && ( playerY + 64 ) > entityY ) {
-        m_collidingEntities->push_back( entity );
+        return true;
     }
+
+    return false;
+}
+
+bool CPlayer::isColliding( CEntity* entity ) {
+   return this->isColliding( entity, this->getPosX(), this->getPosY() ); 
 }

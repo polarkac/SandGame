@@ -5,28 +5,29 @@
 #include "CEntity.h"
 
 class CEvent;
+class CGameScreen;
 struct ALLEGRO_BITMAP;
 
 class CPlayer : public CEntity {
     public:
-        CPlayer( CEvent* event );
-        CPlayer( CEvent* event, int x, int y );
-        void render();
+        CPlayer( CGameScreen* gameScreen, CEvent* event, int x, int y );
+        ~CPlayer();
+        void render( int cameraX, int cameraY );
         void update();
         void init();
         void loadImage( char filename[] );
         void move();
-        void isColliding( CEntity* entity );
+        void jump();
+        bool isColliding( CEntity* entity, int x, int y );
+        bool isColliding( CEntity* entity );
 
     private:
         CEvent* m_event;
+        CGameScreen* m_gameScreen;
         ALLEGRO_BITMAP* m_image;
         float m_frame;
-        bool m_isMoving;
-        bool m_isJumping;
         float m_yVelocity;
         float m_xVelocity;
-        std::vector<CEntity*>* m_collidingEntities;
 };
 
 #endif

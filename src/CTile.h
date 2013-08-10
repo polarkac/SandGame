@@ -12,7 +12,7 @@ enum {
 class CTile : public CEntity {
     public:
         CTile( ALLEGRO_BITMAP* bitmap, int x, int y );
-        void render();
+        void render( int cameraX, int cameraY );
         void update();
 
     private:

@@ -10,6 +10,8 @@ CEntity::CEntity() {
     m_posY = 0;
 }
 
+CEntity::~CEntity() {}
+
 int CEntity::getPosX() {
     return m_posX;
 }   

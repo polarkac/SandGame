@@ -5,11 +5,12 @@ class CEntity {
     public:
         CEntity( int x, int y );
         CEntity();
+        virtual ~CEntity();
         int getPosX();
         void setPosX( int x );
         int getPosY();
         void setPosY( int y );
-        virtual void render() = 0;
+        virtual void render( int cameraX, int cameraY ) = 0;
         virtual void update() = 0;
 
     private:

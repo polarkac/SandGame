@@ -120,6 +120,10 @@ CEvent* CMainWindow::getEvent() {
     return m_event;
 }
 
+ALLEGRO_DISPLAY* CMainWindow::getDisplay() {
+    return m_display;
+}
+
 double CMainWindow::getMiliseconds() {
     return al_get_time() * 1000.0;
 }
