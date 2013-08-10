@@ -52,6 +52,8 @@ void CPauseScreen::update() {
         switch ( m_selectedOption ) {
             case 0:
                 m_mainWindow->changeScreenTo( GAME_SCREEN ); break;
+            case 1:
+                m_mainWindow->changeScreenTo( ABOUT_SCREEN ); break;
             case 2:
                 m_mainWindow->exit(); break;
         }

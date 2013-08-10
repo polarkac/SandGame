@@ -8,6 +8,7 @@
 #include "CEvent.h"
 #include "CGameScreen.h"
 #include "CPauseScreen.h"
+#include "CAboutScreen.h"
 
 CMainWindow::CMainWindow() {
     m_isRunning = false;
@@ -78,6 +79,7 @@ bool CMainWindow::init() {
 
     m_gameScreen = new CGameScreen( this );
     m_pauseMenu = new CPauseScreen( this, m_gameScreen );
+    m_aboutScreen = new CAboutScreen( this );
     m_activeScreen = m_gameScreen;
     
     return true;
@@ -109,6 +111,8 @@ void CMainWindow::changeScreenTo( int screenCode ) {
             m_activeScreen = m_gameScreen; break;
         case 1:
             m_activeScreen = m_pauseMenu; break;
+        case 2:
+            m_activeScreen = m_aboutScreen; break;
     }
 }
 
