@@ -1,7 +1,7 @@
 #ifndef _CGAMESCREEN_H_
     #define _CGAMESCREEN_H_
 
-#include <vector>
+#include <list>
 #include "CScreen.h"
 
 class CPlayer;
@@ -18,13 +18,15 @@ class CGameScreen : public CScreen {
         CGameScreen( CMainWindow* mainWindow, CScreen* parent = NULL);
         void render();
         void update();
-        std::vector<CEntity*>* getVisibleEntities();
+        std::list<CEntity*>* getVisibleEntities();
+        void initMap( char* filename );
+        void addEntity( CEntity* entity );
 
     private:
         int m_rColor;
         CPlayer* m_player;
         Camera* m_cameraControl;
-        std::vector<CEntity*>* m_entities;
+        std::list<CEntity*>* m_entities;
         CSpriteSheet* m_spriteSheet;
         ALLEGRO_BITMAP* m_background;
 };

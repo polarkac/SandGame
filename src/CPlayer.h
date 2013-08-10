@@ -8,6 +8,11 @@ class CEvent;
 class CGameScreen;
 struct ALLEGRO_BITMAP;
 
+enum {
+    FACING_LEFT,
+    FACING_RIGHT
+};
+
 class CPlayer : public CEntity {
     public:
         CPlayer( CGameScreen* gameScreen, CEvent* event, int x, int y );
@@ -18,8 +23,6 @@ class CPlayer : public CEntity {
         void loadImage( char filename[] );
         void move();
         void jump();
-        bool isColliding( CEntity* entity, int x, int y );
-        bool isColliding( CEntity* entity );
 
     private:
         CEvent* m_event;
@@ -28,6 +31,7 @@ class CPlayer : public CEntity {
         float m_frame;
         float m_yVelocity;
         float m_xVelocity;
+        unsigned char m_facing;
 };
 
 #endif

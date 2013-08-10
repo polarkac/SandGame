@@ -5,6 +5,7 @@
 #include "CPlayer.h"
 #include "CEvent.h"
 #include "CGameScreen.h"
+#include "CSandBall.h"
 
 CPlayer::CPlayer( CGameScreen* gameScreen, CEvent* event, int x, int y ) : CEntity( x, y ) {
     m_event = event;
@@ -13,6 +14,7 @@ CPlayer::CPlayer( CGameScreen* gameScreen, CEvent* event, int x, int y ) : CEnti
     m_frame = 0;
     m_yVelocity = 0;
     m_xVelocity = 0;
+    m_facing = FACING_RIGHT;
 }
 
 CPlayer::~CPlayer() {
@@ -39,6 +41,19 @@ void CPlayer::update() {
     this->move();
     this->jump();
 
+    if ( m_event->isKeyDownTimed( ALLEGRO_KEY_LCTRL, 250 ) ) {
+        int modX, modVelocity;
+        if ( m_facing == FACING_RIGHT ) {
+            modX = 64;
+            modVelocity = 8;
+        } else {
+            modX = 0;
+            modVelocity = -8;
+        }
+        m_gameScreen->addEntity( new CSandBall( this->getPosX() + modX, 
+                    this->getPosY() + 32, modVelocity ) );
+    }
+
     this->setPosX( this->getPosX() + m_xVelocity );
     this->setPosY( this->getPosY() + m_yVelocity );
     m_frame += 0.10;
@@ -51,55 +66,45 @@ void CPlayer::update() {
 void CPlayer::move() {
     if ( m_event->isKeyDown( ALLEGRO_KEY_RIGHT ) ) {
         m_xVelocity = 5;
+        m_facing = FACING_RIGHT;
     } else if ( m_event->isKeyDown( ALLEGRO_KEY_LEFT ) ) {
         m_xVelocity = -5;
+        m_facing = FACING_LEFT;
     } else {
         m_xVelocity = 0;
     }
-    std::vector<CEntity*>* ents = m_gameScreen->getVisibleEntities();
-    for ( int a = 0; a < ents->size(); a++ ) {
-        CEntity* ent = ents->at( a );
-        bool isColliding = this->isColliding( ent, this->getPosX() + m_xVelocity, 
+    std::list<CEntity*>* ents = m_gameScreen->getVisibleEntities();
+    std::list<CEntity*>::iterator i;
+    for( i = ents->begin(); i != ents->end(); i++ ) {
+        if ( !(*i)->canCollide() ) {
+            continue;
+        }
+        bool isColliding = this->isColliding( (*i), this->getPosX() + m_xVelocity, 
                 this->getPosY() );
         if ( isColliding ) {
             m_xVelocity = 0;
         }
     }
-
 }
 
 void CPlayer::jump() {
     if( m_yVelocity == 0 && m_event->isKeyDown( ALLEGRO_KEY_SPACE ) ) {
-        m_yVelocity = -5;
-        return;
+        m_yVelocity = -10;
     }
     
     m_yVelocity += 0.4;
-    std::vector<CEntity*>* ents = m_gameScreen->getVisibleEntities();
-    for ( int a = 0; a < ents->size(); a++ ) {
-        CEntity* ent = ents->at( a );
-        bool isColliding = this->isColliding( ent, this->getPosX(), 
+    std::list<CEntity*>* ents = m_gameScreen->getVisibleEntities();
+    std::list<CEntity*>::iterator i;
+    for( i = ents->begin(); i != ents->end(); i++ ) {
+        if ( !(*i)->canCollide() ) {
+            continue;
+        }
+        bool isColliding = this->isColliding( (*i), this->getPosX(), 
                 this->getPosY() + m_yVelocity );
         if ( isColliding ) {
             m_yVelocity = 0;
-        }
+        } 
     }
 }
 
-bool CPlayer::isColliding( CEntity* entity, int x, int y ) {
-    int playerX = x;
-    int playerY = y;
-    int entityX = entity->getPosX();
-    int entityY = entity->getPosY();
 
-    if ( playerX < ( entityX + 64 ) && playerY < ( entityY + 64 ) &&
-            ( playerX + 64 ) > entityX && ( playerY + 64 ) > entityY ) {
-        return true;
-    }
-
-    return false;
-}
-
-bool CPlayer::isColliding( CEntity* entity ) {
-   return this->isColliding( entity, this->getPosX(), this->getPosY() ); 
-}
