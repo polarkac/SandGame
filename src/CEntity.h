@@ -15,10 +15,12 @@ class CEntity {
         bool isColliding( CEntity* entity, int x, int y );
         bool isReadyToRemove();
         bool canCollide();
+        virtual void hurt( int damage );
 
     protected:
         bool m_shouldRemove;
         bool m_canCollide;
+        int m_health;
 
     private:
         int m_posX;

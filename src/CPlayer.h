@@ -23,6 +23,7 @@ class CPlayer : public CEntity {
         void loadImage( char filename[] );
         void move();
         void jump();
+        unsigned char getFacing();
 
     private:
         CEvent* m_event;

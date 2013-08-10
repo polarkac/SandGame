@@ -1,4 +1,5 @@
 #include <allegro5/allegro.h>
+#include <allegro5/allegro_primitives.h>
 #include <iostream>
 #include <vector>
 #include "CWaterBlob.h"
@@ -11,14 +12,21 @@ CWaterBlob::CWaterBlob( CGameScreen* gameScreen, int x, int y ) : CEntity( x, y 
     m_xVelocity = 3;
     m_gameScreen = gameScreen;
     m_radius = 25;
-    m_health = 5;
     m_shouldRemove = false;
     m_canCollide = false;
+    m_health = 10;
 }
 
 void CWaterBlob::render( int cameraX, int cameraY ) {
     ALLEGRO_BITMAP* frameImage = al_create_sub_bitmap( m_image, (int) m_frame * 64, 0, 64, 64 );
     al_draw_bitmap( frameImage, this->getPosX() - cameraX, this->getPosY() - cameraY, 0 );
+    int x = this->getPosX();
+    int y = this->getPosY();
+    if ( m_hurtTime > 0 ) {
+        al_draw_filled_rectangle( x - cameraX, y - cameraY, x + 64 - cameraX, y + 64 - cameraY, 
+                al_map_rgba( 255, 0, 0, 80 ) );
+        m_hurtTime--;
+    }
 }
 
 void CWaterBlob::update() {
@@ -47,9 +55,7 @@ void CWaterBlob::move() {
 }
 
 void CWaterBlob::hurt( int damage ) {
-    m_health -= damage;
+    CEntity::hurt( damage );
 
-    if ( m_health <= 0 ) {
-        m_shouldRemove = true;
-    }
+    m_hurtTime = 30;
 }

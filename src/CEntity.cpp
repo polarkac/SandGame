@@ -53,3 +53,11 @@ bool CEntity::isReadyToRemove() {
 bool CEntity::canCollide() {
     return m_canCollide;
 }
+
+void CEntity::hurt( int damage ) {
+    m_health -= damage;
+
+    if ( m_health <= 0 ) {
+        m_shouldRemove = true;
+    }   
+}

@@ -20,7 +20,7 @@ class CWaterBlob : public CEntity {
         int m_xVelocity;
         CGameScreen* m_gameScreen;
         int m_radius;
-        int m_health;
+        int m_hurtTime;
 };
 
 #endif

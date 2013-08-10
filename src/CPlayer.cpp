@@ -42,16 +42,7 @@ void CPlayer::update() {
     this->jump();
 
     if ( m_event->isKeyDownTimed( ALLEGRO_KEY_LCTRL, 250 ) ) {
-        int modX, modVelocity;
-        if ( m_facing == FACING_RIGHT ) {
-            modX = 64;
-            modVelocity = 8;
-        } else {
-            modX = 0;
-            modVelocity = -8;
-        }
-        m_gameScreen->addEntity( new CSandBall( this->getPosX() + modX, 
-                    this->getPosY() + 32, modVelocity ) );
+        m_gameScreen->addEntity( new CSandBall( m_gameScreen, this ) );
     }
 
     this->setPosX( this->getPosX() + m_xVelocity );
@@ -107,4 +98,6 @@ void CPlayer::jump() {
     }
 }
 
-
+unsigned char CPlayer::getFacing() {
+    return m_facing;
+}
