@@ -14,7 +14,7 @@
 CGameScreen::CGameScreen( CMainWindow* const mainWindow, CScreen* parent ) 
     : CScreen( mainWindow, parent ) {
     m_rColor = 0;
-    m_player = new CPlayer( this, m_mainWindow->getEvent(), 150, 0 );
+    m_player = new CPlayer( this, m_mainWindow->getEvent(), 700, 0 );
     m_cameraControl = new Camera;
     m_cameraControl->posX = m_player->getPosX() - 32;
     m_spriteSheet = new CSpriteSheet( "spritesheet.png" );

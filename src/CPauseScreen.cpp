@@ -35,13 +35,13 @@ void CPauseScreen::render() {
 
 void CPauseScreen::update() {
     CEvent* event = m_mainWindow->getEvent();
-    if ( event->isKeyDownTimed( ALLEGRO_KEY_S, 100 ) ) {
+    if ( event->isKeyDownTimed( ALLEGRO_KEY_DOWN, 100 ) ) {
         m_selectedOption++;
         if ( m_selectedOption > 2 ) {
             m_selectedOption = 0;
         }
     }
-    if ( event->isKeyDownTimed( ALLEGRO_KEY_W, 100 ) ) {
+    if ( event->isKeyDownTimed( ALLEGRO_KEY_UP, 100 ) ) {
         m_selectedOption--;
         if ( m_selectedOption < 0 ) {
             m_selectedOption = 2;

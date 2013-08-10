@@ -18,6 +18,7 @@ class CWaterBlob : public CEntity {
         float m_frame;
         int m_centerX;
         int m_xVelocity;
+        float m_yVelocity;
         CGameScreen* m_gameScreen;
         int m_radius;
         int m_hurtTime;
